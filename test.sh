@@ -223,8 +223,8 @@ Line in description
 EOF
 try "$gi" new
 
-issue=$("$gi" list | awk '/Second issue/{print $1}')
-issue2=$("$gi" list | awk '/First-issue/{print $1}')
+issue=$("$gi" list | awk '/Second issue/{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
+issue2=$("$gi" list | awk '/First-issue/{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
 
 # Show
 start ; "$gi" show "$issue" | try_grep 'Second issue'
@@ -443,7 +443,7 @@ else
   start ; "$gi" list | try_grep -v 'A closed issue on GitHub without description'
   start ; "$gi" list -a | try_grep 'A closed issue on GitHub without description'
   # Description and comments
-  issue=$("$gi" list | awk '/An open issue on GitHub with a description and comments/ {print $1}')
+  issue=$("$gi" list | awk '/An open issue on GitHub with a description and comments/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
   start ; "$gi" show "$issue" | try_grep '^ *line 1$'
   start ; "$gi" show "$issue" | try_grep '^ *line 2$'
   start ; "$gi" show "$issue" | try_grep 'Line 3 with special characters "'\''<>|\$'
@@ -453,7 +453,7 @@ else
   start ; "$gi" show -c "$issue" | try_grep '^ *comment 4$'
   start ; "$gi" show "$issue" | try_grep '^GitHub issue: #[0-9]* at dspinellis/git-issue-test-issues$'
   # Assignees and tags
-  issue=$("$gi" list | awk '/An open issue on GitHub with assignees and tags/ {print $1}')
+  issue=$("$gi" list | awk '/An open issue on GitHub with assignees and tags/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
   start ; "$gi" show "$issue" | try_grep 'good first issue'
   start ; "$gi" show "$issue" | header_continuation | try_grep 'Assigned-to:.*dspinellis'
   start ; "$gi" show "$issue" | header_continuation | try_grep 'Assigned-to:.*louridas'
@@ -486,7 +486,8 @@ else
     try "$gi" new -c "github $ghrepo" -s "Issue exported directly"
     "$gi" assign "$issue2" "$ghuser" > /dev/null 2>&1
     try "$gi" export github $ghrepo
-    start ; "$gi" export github $ghrepo | try_grep "Issue $issue.* not modified, skipping..."
+    #"$gi" export github $ghrepo
+    start ; "$gi" export github $ghrepo | sed 's/\x1b\[[0-9;]*m//g' | try_grep "Issue $issue.* not modified, skipping..."
     # Test invalid assignee
     "$gi" assign "$issue2" octocat > /dev/null 2>&1
     start ; "$gi" export github $ghrepo | try_grep "Couldn't add assignee octocat. Skipping..."
@@ -494,12 +495,12 @@ else
 
     # test milestone creation
     "$gi" new -s "milestone issue" > /dev/null 2>&1
-    issue3=$("$gi" list | awk '/milestone issue/{print $1}')
+    issue3=$("$gi" list | awk '/milestone issue/{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
     "$gi" milestone "$issue3" ver4 > /dev/null 2>&1
     "$gi" duedate "$issue3" week > /dev/null 2>&1
     "$gi" timeestimate "$issue3" 3hours > /dev/null 2>&1
     try "$gi" create -e "$issue3" github $ghrepo
-    try "$gi" exportall -a github $ghrepo
+    try "$gi" exportall -a github $ghrepo | sed 's/\x1b\[[0-9;]*m//g'
 
     # Basic round-trip tests
     echo "Starting GitHub round-trip test..."
@@ -508,8 +509,8 @@ else
     cd testdir3
     "$gi" init
     try "$gi" import github $ghrepo
-    rissue=$("$gi" list | awk '/An open issue on GitHub with a description and comments/ {print $1}')
-    rissue2=$("$gi" list | awk '/milestone issue/{print $1}')
+    rissue=$("$gi" list | sed -r "s/\x1B\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]//g" | awk '/An open issue on GitHub with a description and comments/{print $1}')
+    rissue2=$("$gi" list | awk '/milestone issue/{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
     start ; "$gi" show "$rissue" | try_grep '^ *line 1'
     start ; "$gi" show "$rissue" | try_grep '^ *line 2'
     start ; "$gi" show "$rissue" | try_grep 'Line 3 with special characters "'\''<>|\$'
@@ -519,7 +520,7 @@ else
     start ; "$gi" show -c "$rissue" | try_grep '^ *comment 4'
  
     start ; "$gi" show "$rissue2" | try_grep '^Milestone: ver4'
-    rissue3=$("$gi" list | awk '/An open issue on GitHub with assignees and tags/ {print $1}')
+    rissue3=$("$gi" list | awk '/An open issue on GitHub with assignees and tags/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
     start ; "$gi" show "$rissue3" | try_grep 'good first issue'
     
     cd ../testdir
@@ -546,7 +547,7 @@ else
   start ; "$gi" list | try_grep -v 'A closed issue on GitLab without description'
   start ; "$gi" list -a | try_grep 'A closed issue on GitLab without description'
   # Description and comments
-  glissue=$("$gi" list | awk '/An open issue on GitLab with a description and comments/ {print $1}')
+  glissue=$("$gi" list | awk '/An open issue on GitLab with a description and comments/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
   start ; "$gi" show "$glissue" | try_grep '^ *line 1$'
   start ; "$gi" show "$glissue" | try_grep '^ *line 2$'
   start ; "$gi" show "$glissue" | try_grep 'Line 3 with special characters "'\''<>|\$'
@@ -555,7 +556,7 @@ else
   start ; "$gi" show -c "$glissue" | try_grep '^ *comment 4$'
   start ; "$gi" show "$glissue" | try_grep '^GitLab issue: #[0-9]* at vyrondrosos/git-issue-test-issues$'
   # Assignees and tags
-  glissue=$("$gi" list | awk '/An open issue on GitLab with assignees and tags/ {print $1}')
+  glissue=$("$gi" list | awk '/An open issue on GitLab with assignees and tags/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
   start ; "$gi" show "$glissue" | try_grep 'good first issue'
   start ; "$gi" show "$glissue" | header_continuation | try_grep 'Assigned-to:.*'"$gluser"
   # Milestone
@@ -569,7 +570,7 @@ else
   # Import repo belonging to group
   try "$gi" import gitlab git-issue-test-group git-issue-subgroup-test/git-issue-group-test
   start ; "$gi" list | try_grep 'Issue in group repo'
-  glissue2=$("$gi" list | awk '/Issue in group repo/ {print $1}')
+  glissue2=$("$gi" list | awk '/Issue in group repo/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
   start ; "$gi" show "$glissue2" | try_grep '^GitLab issue: #1 at git-issue-test-group/git-issue-subgroup-test/git-issue-group-test$'
 
   # Export
@@ -597,7 +598,7 @@ else
 
     # test milestone creation
     "$gi" new -s "gitlab milestone issue : %M" > /dev/null 2>&1
-    glissue3=$("$gi" list | awk '/gitlab milestone issue : %M/{print $1}')
+    glissue3=$("$gi" list | awk '/gitlab milestone issue : %M/{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
     "$gi" milestone "$glissue3" ver4 > /dev/null 2>&1
     "$gi" duedate "$glissue3" week > /dev/null 2>&1
     "$gi" timeestimate "$glissue3" 3hours > /dev/null 2>&1
@@ -619,8 +620,8 @@ else
     start ; "$gi" list | try_grep -v 'A closed issue on GitLab without description'
     start ; "$gi" list -a | try_grep 'A closed issue on GitLab without description'
     # Description and comments
-    rglissue=$("$gi" list | awk '/An open issue on GitLab with a description and comments/ {print $1}')
-    rglissue2=$("$gi" list | awk '/gitlab milestone issue/ {print $1}')
+    rglissue=$("$gi" list | awk '/An open issue on GitLab with a description and comments/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
+    rglissue2=$("$gi" list | awk '/gitlab milestone issue/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
     start ; "$gi" show "$rglissue" | try_grep '^ *line 1'
     start ; "$gi" show "$rglissue" | try_grep '^ *line 2'
     start ; "$gi" show "$rglissue" | try_grep 'Line 3 with special characters "'\''<>|\$'
@@ -633,7 +634,7 @@ else
     start ; "$gi" show "$rglissue2" | try_grep '^Time Estimate: 03 hours'
     start ; "$gi" show "$rglissue2" | try_grep '^Milestone: ver4'
     # Assignees and tags
-    rglissue3=$("$gi" list | awk '/An open issue on GitLab with assignees and tags/ {print $1}')
+    rglissue3=$("$gi" list | awk '/An open issue on GitLab with assignees and tags/ {print $1}' | sed 's/\x1b\[[0-9;]*m//g')
     start ; "$gi" show "$rglissue3" | try_grep 'good first issue'
     start ; "$gi" show "$rglissue3" | header_continuation | try_grep 'Assigned-to:.*'"$gluser"
 

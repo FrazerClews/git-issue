@@ -3,6 +3,9 @@
 # SC2039: In POSIX sh, 'local' is undefined
 
 # import: import issues from GitHub/GitLab {{{1
+
+color=$(get_diff_color_commit)
+
 usage_import()
 {
   cat <<\USAGE_import_EOF
@@ -619,7 +622,7 @@ Comment URL: $html_url" \
 	    --author="$name <$name@users.noreply.gitlab.com>"
         fi
 
-	echo "Imported/updated issue #$issue_number comment $comment_id as $(short_sha "$csha")"
+	echo -e "Imported/updated issue #${issue_number} comment ${comment_id} as ${color}$(short_sha "${csha}")\e[0m"
       fi
     done # For all comments on page
 
@@ -787,7 +790,7 @@ import_issues()
 	commit "gi: Import issue #$issue_number from $provider/$user/$repo" \
 	"Issue URL: https://$provider.com/$user/$repo/issues/$issue_number" \
 	--author="$name <$name@users.noreply.$provider.com>"
-      echo "Imported/updated issue #$issue_number as $(short_sha "$sha")"
+      echo -e "Imported/updated issue #${issue_number} as ${color}$(short_sha "${sha}")\e[0m"
     fi
 
     # Import issue comments
@@ -831,12 +834,12 @@ export_issues()
     lastimport=$(git rev-list --grep "gi: \\(Add imports/$provider/$user/$repo/$num\\|Import issue #$num from $provider/$user/$repo\\)" HEAD | head -n 1)
     test -n "$lastimport" || error "Cannot find import commit."
     if [ -n "$(git rev-list --grep='\(gi: Import comment message\|gi: Add comment message\|gi: Edit comment\)' --invert-grep "$lastimport"..HEAD "$path")" ] ; then
-      echo "Exporting issue $sha as #$num"
+      echo -e "Exporting issue ${color}${sha}\e[0m as #${num}"
       create_issue -u "$num" "$sha" "$provider" "$user" "$repo"
 
       rm -f create-body create-header
     else
-      echo "Issue $sha not modified, skipping..."
+      echo -e "Issue ${color}${sha}\e[0m not modified, skipping..."
     fi
 
     # Comments
@@ -975,7 +978,7 @@ sub_exportall()
   # Remove already exported issues
   if [ -d "imports/$provider/$user/$repo" ] ; then
     for i in "imports/$provider/$user/$repo/"[0-9]* ; do
-      shas=$(echo "$shas" | sed "s/$(head -c 7 "$i/sha")//")
+      shas=$(echo "$shas" | sed "s/$(head -c 7 "$i/sha")//") # TODO -e needed?
     done
   fi
 

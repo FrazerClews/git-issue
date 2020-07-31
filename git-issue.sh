@@ -328,6 +328,18 @@ sub_new()
   fi
 }
 
+# Return the diff.color.commit ANSI value used in the current git repository
+get_diff_color_commit()
+{
+  if git config --local diff.color.commit > /dev/null 2>&1; then
+    git config --local --get-color diff.color.commit
+  elif git config --global diff.color.commit > /dev/null; then
+    git config --global --get-color diff.color.commit
+  else
+    echo "\e[33m"
+  fi
+}
+
 # show: Show the specified issue {{{1
 usage_show()
 {
@@ -356,12 +368,15 @@ sub_show()
 
   test -n "$1" || usage_show
 
+  local color
+  color=$(get_diff_color_commit)
+
   cdissues
   path=$(issue_path_part "$1") || exit
   isha=$(issue_sha "$path")
   {
     # SHA, author, date
-    echo "issue $isha"
+    echo -e "${color}issue ${isha}\e[0m"
     git show --no-patch --format='Author:	%an <%ae>
 Date:	%aD' "$isha"
 
@@ -1068,7 +1083,7 @@ shortshow()
   description=$(head -n 1 "$path/description"|sed -e 's/[\/&]/\\&/g')
 
   # Print the field to sort by first, and remove it after sorting
-  (echo "$sortfield"$'\002'"$formatstring") |
+  (echo -e "${sortfield}"$'\002'"${formatstring}") |
 
   sed -e s/%n/$'\001'/g \
   -e s/%i/"$id"/g \
@@ -1118,21 +1133,24 @@ sub_list()
     esac
   done
 
+  local color
+  color=$(get_diff_color_commit)
+
   case "$formatstring" in
     oneline)
-      formatstring='ID: %i  Date: %c  Tags: %T  Desc: %D'
+      formatstring="${color}ID: %i\e[0m  Date: %c  Tags: %T  Desc: %D"
       ;;
     short)
-      formatstring='ID: %i%nDate: %c%nDue Date: %d%nTags: %T%nDescription: %D'
+      formatstring="${color}ID: %i\e[0m%nDate: %c%nDue Date: %d%nTags: %T%nDescription: %D"
       ;;
     compact)
-      formatstring='ID: %i   Date: %c%nDue Date: %d   Weight: %w%nTags: %T   Milestone: %M%nDescription: %D'
+      formatstring="${color}ID: %i\e[0m   Date: %c%nDue Date: %d   Weight: %w%nTags: %T   Milestone: %M%nDescription: %D"
       ;;
     medium)
-      formatstring='ID: %i%nDate: %c%nDue Date: %d%nMilestone: %M%nWeight: %w%nTags: %T%nDescription: %D'
+      formatstring="${color}ID: %i\e[0m%nDate: %c%nDue Date: %d%nMilestone: %M%nWeight: %w%nTags: %T%nDescription: %D"
       ;;
     full)
-      formatstring='ID: %i%nDate: %c%nDue Date: %d%nTime Spent: %s%nTime Estimate: %e%nAssignees: %A%nMilestone: %M%nWeight: %w%nTags: %T%nDescription: %D'
+      formatstring="${color}ID: %i\e[0m%nDate: %c%nDue Date: %d%nTime Spent: %s%nTime Estimate: %e%nAssignees: %A%nMilestone: %M%nWeight: %w%nTags: %T%nDescription: %D"
       ;;
   esac
   shift $((OPTIND - 1));
@@ -1160,7 +1178,7 @@ sub_list()
     tr '\001' '\n'
   else
     while read -r path id ; do
-      printf '%s' "$id "
+      printf "%b%s\e[0m " "${color}" "${id}"
       head -1 "$path/description"
     done |
     sort -k 2
