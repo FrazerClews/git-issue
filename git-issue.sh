@@ -214,8 +214,13 @@ pager()
 usage_init()
 {
   cat <<\USAGE_new_EOF
-gi init usage: git issue init [-e]
--e	Use existing project's Git repository
+Usage: git issue init [-e]
+
+  Initalize git project to utalize git issue
+
+Options:
+  -e, --existing  Use existing project's Git repository
+  -h, --help      # TODO
 USAGE_new_EOF
   exit 2
 }
@@ -224,10 +229,27 @@ sub_init()
 {
   local existing
 
-  while getopts e flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--existing")
+        set -- "$@" "-e"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts e:h flag ; do
     case $flag in
     e)
       existing=1
+      ;;
+    h) # TODO simplify
+      usage_init
       ;;
     ?)
       usage_init
@@ -281,7 +303,14 @@ EOF
 usage_new()
 {
   cat <<\USAGE_new_EOF
-gi new usage: git issue new [-s summary]
+Usage: git issue new [-s summary]
+
+  Open a new issue
+
+Options:
+  -c              ?????
+  -s, --summary   Include summary for the issue # TODO make summary
+  -h, --help
 USAGE_new_EOF
   exit 2
 }
@@ -290,13 +319,33 @@ sub_new()
 {
   local summary sha path
 
-  while getopts s:c: flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--create")
+        set -- "$@" "-c"
+        ;;
+      "--summary")
+        set -- "$@" "-s"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts s:c:h: flag ; do
     case $flag in
     s)
       summary="$OPTARG"
       ;;
     c)
       create=$OPTARG
+      ;;
+    h) # TODO simplify
+      usage_new
       ;;
     ?)
       usage_new
@@ -332,8 +381,13 @@ sub_new()
 usage_show()
 {
   cat <<\USAGE_show_EOF
-gi show usage: git issue show [-c] <sha>
--c	Show comments
+Usage: git issue show [-c] <sha>
+
+  Show the issue based on the sha
+
+Options:
+  -c, --comments  Show comments
+  -h, --help      # TODO
 USAGE_show_EOF
   exit 2
 }
@@ -342,10 +396,27 @@ sub_show()
 {
   local isha path comments rawdate rawest rawspent OPTIND
 
-  while getopts c flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--comments")
+        set -- "$@" "-c"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts c:h flag ; do
     case $flag in
     c)
       comments=1
+      ;;
+    h)
+      usage_show
       ;;
     ?)
       usage_show
@@ -473,13 +544,40 @@ Date:	%aD
 usage_clone()
 {
   cat <<\USAGE_clone_EOF
-gi clone usage: git issue clone <URL> <local-dir>
+Usage: git issue clone <URL> <local-dir>
+
+  Clone the specified remote repository
+
+# TODO option for help?
 USAGE_clone_EOF
   exit 2
 }
 
 sub_clone()
 {
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--help")  # TODO after testing is it needed?
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts h flag ; do
+    case $flag in
+    h)  # TODO after testing is it needed?
+      usage_comment
+      ;;
+    *)
+      usage_comment
+      ;;
+    esac
+  done
+  shift $((OPTIND - 1));
+
   test -n "$1" -a -n "$2" || usage_clone
   mkdir -p "$2" || error "Unable to create local directory"
   cd "$2" || error "Unable to change into local directory"
@@ -491,9 +589,14 @@ sub_clone()
 usage_milestone()
 {
   cat <<\USAGE_tag_EOF
-gi milestone usage: git issue milestone <sha> <milestone>
-	git issue milestone -r <sha>
--r	Remove the issue's milestone
+Usage: git issue milestone <sha> <milestone>
+	     git issue milestone -r <sha>
+
+  Set an issue's milestone
+
+Options:
+  -r, --remove	Remove the issue's milestone
+  -h, --help      # TODO
 USAGE_tag_EOF
   exit 2
 }
@@ -502,10 +605,27 @@ sub_milestone()
 {
   local isha tag remove path milestone OPTIND
 
-  while getopts r flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--remove")
+        set -- "$@" "-r"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts r:h flag ; do
     case $flag in
     r)
       remove=1
+      ;;
+    h)
+      usage_milestone
       ;;
     ?)
       usage_milestone
@@ -544,9 +664,14 @@ sub_milestone()
 usage_weight()
 {
   cat <<\USAGE_tag_EOF
-gi weight usage: git issue weight <sha> <weight>
-	git issue weight -r <sha>
--r	Remove the issue's weight
+Usage: git issue weight <sha> <weight>
+       git issue weight -r <sha>
+
+  Set an issue's weight
+
+Options:
+  -r, --remove	Remove the issue's weight
+  -h, --help     # TODO desc
 USAGE_tag_EOF
   exit 2
 }
@@ -555,10 +680,27 @@ sub_weight()
 {
   local isha tag remove path weight OPTIND
 
-  while getopts r flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--remove")
+        set -- "$@" "-r"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts r:h flag ; do
     case $flag in
     r)
       remove=1
+      ;;
+    h)
+      usage_weight
       ;;
     ?)
       usage_weight
@@ -600,10 +742,15 @@ sub_weight()
 usage_duedate()
 {
   cat <<\USAGE_tag_EOF
-gi duedate usage: git issue duedate <sha> <dd>
-	git issue duedate -r <sha>
-<dd>	date in format accepted by `date`
--r	Remove the issue's duedate
+Usage: git issue duedate <sha> <dd>
+       git issue duedate -r <sha>
+
+  Set an issue's weight
+  <dd>	date in format accepted by `date`
+
+Options:
+  -r, --remove	Remove the issue's duedate
+  -h, --help    #TODO
 USAGE_tag_EOF
   exit 2
 }
@@ -612,10 +759,27 @@ sub_duedate()
 {
   local isha tag remove path duedate OPTIND
 
-  while getopts r flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--remove") # TODO fix `No arg for -r option` when using --remove 
+        set -- "$@" "-r"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts r:h flag ; do
     case $flag in
     r)
       remove=1
+      ;;
+    h)
+      usage_duedate
       ;;
     ?)
       usage_duedate
@@ -659,11 +823,16 @@ sub_duedate()
 usage_timespent()
 {
   cat <<\USAGE_tag_EOF
-gi timespent usage: git issue timespent [-a] <sha> <ts>
--a	instead of replacing the time spent, add to it
-	git issue timespent -r <sha>
-<ts>	time interval in format accepted by `date`
--r	Remove the issue's timespent
+Usage: git issue timespent [-a] <sha> <ts>
+       git issue timespent -r <sha>
+
+  Set time spent on an issue
+  <ts> time interval in format accepted by `date`
+
+Options:
+  -a, --add     Instead of replacing the time spent, add to it # TODO do stuff
+  -r, --remove	Remove the issue's timespent
+  -h, --help    # TODO desc
 USAGE_tag_EOF
   exit 2
 }
@@ -672,13 +841,33 @@ sub_timespent()
 {
   local isha tag remove path timespent add OPTIND
 
-  while getopts ra flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--add") # TODO fix `No arg for -r option` when using --remove 
+        set -- "$@" "-a"
+        ;;
+      "--remove") # TODO fix `No arg for -r option` when using --remove 
+        set -- "$@" "-r"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts ra:h flag ; do
     case $flag in
     a)
       add=1
       ;;
     r)
       remove=1
+      ;;
+    h)
+      usage_timespent
       ;;
     ?)
       usage_timespent
@@ -730,10 +919,14 @@ sub_timespent()
 usage_timeestimate()
 {
   cat <<\USAGE_tag_EOF
-gi timeestimate usage: git issue timeestimate <sha> <te>
-	git issue timeestimate -r <sha>
-<te>	time interval in format accepted by `date`
--r	Remove the issue's time estimate
+Usage: git issue timeestimate <sha> <te>
+       git issue timeestimate -r <sha>
+
+  <te>	time interval in format accepted by `date`
+
+Options:
+  -r, --remove  Remove the issue's time estimate
+  -h, --help    
 USAGE_tag_EOF
   exit 2
 }
@@ -742,10 +935,27 @@ sub_timeestimate()
 {
   local isha tag remove path timeestimate rawspent OPTIND
 
-  while getopts r flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--remove") # TODO fix `No arg for -r option` when using --remove 
+        set -- "$@" "-r"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts r:h flag ; do
     case $flag in
     r)
       remove=1
+      ;;
+    h)
+      usage_timeestimate
       ;;
     ?)
       usage_timeestimate
@@ -792,8 +1002,13 @@ sub_timeestimate()
 usage_assignee()
 {
   cat <<\USAGE_tag_EOF
-gi assign usage: git issue assign [-r] <sha> <email> ...
--r	Remove the specified assignee
+Usage: git issue assign [-r] <sha> <email> ...
+
+  Assign an issue to a person or remove assignment
+
+Options:
+  -r, --remove	Remove the specified assignee # TODO in sub_assign or file_add_rm
+  -h, --help     # TODO in sub_assign or file_add_rm
 USAGE_tag_EOF
   exit 2
 }
@@ -873,8 +1088,12 @@ file_add_rm()
 usage_tag()
 {
   cat <<\USAGE_tag_EOF
-gi tag usage: git issue tag [-r] <sha> <tag> ...
--r	Remove the specified tag
+Usage: git issue tag [-r] <sha> <tag> ...
+
+  Add or remove an issue tag
+
+Options:
+  -r, --remove	Remove the specified tag
 USAGE_tag_EOF
   exit 2
 }
@@ -888,8 +1107,12 @@ sub_tag()
 usage_watcher()
 {
   cat <<\USAGE_watcher_EOF
-gi watcher usage: git issue watcher [-r] <sha> <tag> ...
--r	Remove the specified watcher
+Usage: git issue watcher [-r] <sha> <tag> ...
+
+  Add or remove an issue watcher
+
+Options:
+  -r, --remove  Remove the specified watcher # TODO
 USAGE_watcher_EOF
   exit 2
 }
@@ -903,7 +1126,12 @@ sub_watcher()
 usage_comment()
 {
   cat <<\USAGE_comment_EOF
-gi comment usage: git issue comment <sha>
+Usage: git issue comment <sha>
+
+  Comment on an issue
+
+Options:
+  -h, --help  #TODO
 USAGE_comment_EOF
   exit 2
 }
@@ -932,7 +1160,13 @@ sub_comment()
 usage_edit()
 {
   cat <<\USAGE_edit_EOF
-gi edit usage: git issue edit [-c] <sha>
+Usage: git issue edit [-c] <sha>
+
+  Edit an issue's description
+
+Options:
+  -c, --comment  # TODO
+  -h, --help  # TODO
 USAGE_edit_EOF
   exit 2
 }
@@ -941,10 +1175,27 @@ sub_edit()
 {
   local isha csha path comment fullpath OPTIND
 
-  while getopts c flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--comment") # TODO fix `No arg for -r option` when using --remove 
+        set -- "$@" "-c"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts c:h flag ; do
     case $flag in
     c)
       comment=1
+      ;;
+    h)
+      usage_edit
       ;;
     ?)
       usage_edit
@@ -993,8 +1244,15 @@ sub_edit()
 usage_list()
 {
   cat <<\USAGE_list_EOF
-gi list usage: git issue list [-a] [tag|milestone]
-              git issue list [-a] -l formatstring [-o sort_field] [-r] [tag|milestone]
+Usage: git issue list [-a] [tag|milestone]
+       git issue list [-a] -l formatstring [-o sort_field] [-r] [tag|milestone]
+
+Options:
+  -a, --all         List all issues open and closed
+  -l formatstring   WIP set long true
+  -o sort_field     
+  -r [tag|milestone]?
+  -h, --help        shows help for list
 USAGE_list_EOF
   exit 2
 }
@@ -1091,7 +1349,21 @@ sub_list()
 {
   local all tag path id sortrev OPTIND
 
-  while getopts al:o:r flag ; do
+  for arg in "$@"; do
+    shift
+    case "$arg" in
+      "--all")
+        set -- "$@" "-a"
+        ;;
+      "--help")
+        set -- "$@" "-h"
+        ;;
+      *)
+        set -- "$@" "$arg"
+    esac
+  done
+
+  while getopts al:o:r:h flag ; do
     case "$flag" in
     a)
       all=1
@@ -1111,6 +1383,9 @@ sub_list()
       ;;
     r)
       sortrev="-r"
+      ;;
+    h)
+      usage_list
       ;;
     ?)
       usage_list
@@ -1180,7 +1455,13 @@ sub_list()
 usage_log()
 {
   cat <<\USAGE_log_EOF
-gi log usage: git issue log [-I issue-SHA] [git log options]
+Usage: git issue log [-I issue-SHA] [git log options]
+
+  Show log of issue changes
+
+Options:
+  -I, --issue  # TODO
+  -h, --help
 USAGE_log_EOF
   exit 2
 }
@@ -1211,7 +1492,9 @@ sub_log()
 usage_filter()
 {
   cat <<\USAGE_filter_EOF
-gi filter usage: git issue filter-apply command
+Usage: git issue filter-apply command
+
+  # TODO desc
 USAGE_filter_EOF
   exit 2
 }
@@ -1358,7 +1641,9 @@ sub_tags()
 usage_help()
 {
   cat <<\USAGE_help_EOF
-gi help usage: git issue help
+Usage: git issue help
+
+  Display help information # TODO --?
 USAGE_help_EOF
   exit 2
 }
@@ -1371,7 +1656,7 @@ sub_help()
   # DO NOT EDIT IT HERE; UPDATE README.md instead
   #
   cat <<\USAGE_EOF
-usage: git issue <command> [<args>]
+usage: git issue <command> [<args>] # TODO format rest in README
 
 The following commands are available:
 
