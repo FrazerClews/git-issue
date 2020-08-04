@@ -77,10 +77,25 @@ filesysid()
 # Move to the .issues directory
 cdissues()
 {
+  local current_dir
+  current_dir=$(pwd)
   while : ; do
     cd .issues 2>/dev/null && return
     if [ "$(filesysid .)" = "$(filesysid /)" ] ; then
-      error 'Not an issues repository (or any of the parent directories)'
+      echo 'Not an issues repository (or any of the parent directories)'
+      read -rp "Do you want to initalize a git issue repository [Y/N]: " initalize
+      case ${initalize} in
+        [Yy]) # TODO check if * needed after []
+          cd "${current_dir}" || exit # TODO error msg?
+          sub_init
+          ;;
+        [Nn])
+          exit
+          ;;
+        *)
+          error "Invalid input"
+          ;;
+      esac
     fi
     cd ..
   done
