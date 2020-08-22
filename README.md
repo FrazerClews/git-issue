@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/eellak/gsoc2019-git-issue.svg?branch=gsoc-2019)](https://travis-ci.org/eellak/gsoc2019-git-issue)
+
 # git-issue
 
 This is a minimalist decentralized issue management system based on Git,
@@ -32,9 +33,11 @@ It has the following advantages over other systems.
 ## Installation
 
 ### Administrator installation
+
 Clone the repo and run `make install` with appropriate privileges.
 
 ### Personal installation
+
 Clone the repo and register a git alias to the `git-issue.sh` script:
 
 ```
@@ -49,6 +52,7 @@ source ${REPO_PATH}/gi-completion.sh
 ```
 
 ### Backward compatibility with the gi command
+
 For backward compatibility you can also use the original _gi_ command,
 by copying `gi.sh` to someplace in your path.
 In this case you must register the git alias to use the auto completion feature.
@@ -60,6 +64,7 @@ you can install it with `install gi.sh ~/bin/gi`.
 You can even put `gi` in your project's current directory and run it from there.
 
 ### Portability and testing
+
 The `git-issue.sh` script has been tested on:
 Debian GNU/Linux, FreeBSD, macOS, and Cygwin.
 If you're running *git issue* on another system,
@@ -67,19 +72,23 @@ run the `test.sh` script to verify
 its operation, and (please) update this file.
 
 ### Requirements
+
 `git-issue` requires the *jq* and *curl* utilities.
 OS X users might also need GNU date, obtained by installing `homebrew` package coreutils.
 For running the tests *shellcheck* is also required.
 
 ## Use
+
 You use _git issue_ with the following sub-commands.
 
 ### Start an issue repository
+
 * `git issue clone`: Clone the specified remote repository.
 * `git issue init`: Create a new issues repository in the current directory.
   The `-e` option uses an existing Git project repository.
 
 ### Work with an issue
+
 * `git issue new`: Create a new open issue (with optional `-s` summary and -c "provider user repo" for github/gitlab export).
 * `git issue show`: Show specified issue (and its comments with `-c`).
 * `git issue comment`: Add an issue comment.
@@ -105,7 +114,9 @@ You use _git issue_ with the following sub-commands.
 * `git issue attach`: Attach (or remove with `-r`) a file to an issue.
 * `git issue watcher`: Add (or remove with `-r`) an issue watcher.
 * `git issue close`: Remove the `open` tag, add the closed tag
+
 ### Show multiple issues
+
 * `git issue list`: List open issues (or all with `-a`).
    An optional argument can show issues matching a tag or milestone.
 * `git issue list -l formatstring`: This will list issues in the specified format, given as an argument to `-l`.
@@ -128,6 +139,7 @@ You use _git issue_ with the following sub-commands.
   Optionally, one of the above given with `-o` will order based on this field(reverse order with `-r`).
 
 ### Work with multiple issues
+
 * `git issue filter-apply command`: Run `command` in every issue directory. The following environment variables will be set:
   * `GI_SHA` : Sha of the current issue
   * `GI_IMPORTS` : The imports directories for current issue(one on each line)
@@ -139,6 +151,7 @@ You use _git issue_ with the following sub-commands.
   Remember to inspect the results (e.g. `gi git diff`) and commit them with `gi git commit -a`.
 
 ### Synchronize with remote repositories
+
 * `git issue push`: Update remote Git repository with local changes.
 * `git issue pull`: Update local Git repository with remote changes.
 * `git issue import`: Import/update GitHub/GitLab issues from the specified project.
@@ -160,6 +173,7 @@ You use _git issue_ with the following sub-commands.
 * `git issue exportall`: Export all open issues in the database (`-a` to include closed ones) to GitHub/GitLab. Useful for cloning whole repositories.
 
 ### Help and debug
+
 * `git issue help`: Display help information about git issue.
 * `git issue log`: Output a log of changes made
 * `git issue git`: Run the specified Git command on the issues repository.
@@ -170,9 +184,11 @@ parent of the commit that opened them, which is specifically crafted for
 that element and can be used to derive its date and author.
 
 ## Internals
+
 All data are stored under `.issues`, which should be placed under `.gitignore`,
 if it will coexist with another Git-based project.
 The directory contains the following elements.
+
 * A `.git` directory contains the Git data associated with the issues.
 * A `config` file with configuration data.
 * An `imports` directory contains details about imported issues.
@@ -204,6 +220,7 @@ The directory contains the following elements.
 * A `templates` directory with message templates.
 
 ## Contributing
+
 Contributions are welcomed through pull requests.
 Before working on a new feature please look at open issues, and if no
 corresponding issue is open, create one to claim priority over the task.
@@ -214,9 +231,11 @@ and usage examples, are automatically inserted into the script and its
 documentation from the `README.md` file using the `sync-docs.sh` command.
 
 ## Video
+
 The video of a presentation of *git issue* at [FOSDEM 2020](https://fosdem.org/2020/schedule/event/git_issue_management/) is available [for streaming](https://video.fosdem.org/2020/H.2215/git_issue_management.webm) or [download](https://video.fosdem.org/2020/H.2215/git_issue_management.mp4).
 
 ## Example session
+
 You can also view a video of the following session on [YouTube](https://youtu.be/mLOZGolLmW4).
 
 ### Initialize issue repository
@@ -524,6 +543,7 @@ e6a95c9 - New issue entered from the command line
 ```
 
 ## Related work
+
 * [deft](https://github.com/npryce/deft) developed in 2011 is based on
   the same idea.
   It requires Python and offers a GUI.
