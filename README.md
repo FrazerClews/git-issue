@@ -1,6 +1,7 @@
-[![Build Status](https://travis-ci.org/eellak/gsoc2019-git-issue.svg?branch=gsoc-2019)](https://travis-ci.org/eellak/gsoc2019-git-issue)
+git-issue
+=========
 
-# git-issue
+[![Build Status](https://travis-ci.org/eellak/gsoc2019-git-issue.svg?branch=gsoc-2019)](https://travis-ci.org/eellak/gsoc2019-git-issue)
 
 This is a minimalist decentralized issue management system based on Git,
 offering (optional) biderectional integration with GitHub and GitLab issue management.
@@ -40,14 +41,14 @@ Clone the repo and run `make install` with appropriate privileges.
 
 Clone the repo and register a git alias to the `git-issue.sh` script:
 
-```
+```sh
 git config --global alias.issue '!'"${REPO_PATH}/git-issue.sh"
 ```
 
 If you are using a bash shell, you can also register the autocompletion
 by adding the following to your .bashrc.
 
-```
+```sh
 source ${REPO_PATH}/gi-completion.sh
 ```
 
@@ -240,7 +241,7 @@ You can also view a video of the following session on [YouTube](https://youtu.be
 
 ### Initialize issue repository
 
-```
+```sh
 $ git issue init
 Initialized empty Issues repository in /home/dds/src/gi/.issues
 $ git issue new -s 'New issue entered from the command line'
@@ -249,14 +250,14 @@ Added issue e6a95c9
 
 ### Create a new issue (opens editor window)
 
-```
+```sh
 $ git issue new
 Added issue 7dfa5b7
 ```
 
 ### List open issues
 
-```
+```sh
 $ git issue list
 7dfa5b7 An issue entered from the editor
 e6a95c9 New issue entered from the command line
@@ -264,42 +265,42 @@ e6a95c9 New issue entered from the command line
 
 ### Add an issue comment (opens editor window)
 
-```
+```sh
 $ git issue comment e6a95c9
 Added comment 8c0d5b3
 ```
 
 ### Add a due date for the issue
 
-```
+```sh
 $ git issue duedate "next Tuesday" e6a95c9
 Added duedate 2019-08-13T00:00:00+03:00
 ```
 
 ### Keep track of time spent on the issue
 
-```
+```sh
 $ git issue timespent "2hours" e6a95c9
 Added timespent 7200
 ```
 
 ### Log additional time spent working on it
 
-```
+```sh
 $ git issue timespent -a "4 hours" e6a95c9
 Added timespent 21600
 ```
 
 ### Add tag to an issue
 
-```
+```sh
 $ git issue tag e6a9 urgent
 Added tag urgent
 ```
 
 ### Add two more tags
 
-```
+```sh
 $ git issue tag e6a9 gui crash
 Added tag gui
 Added tag crash
@@ -307,35 +308,35 @@ Added tag crash
 
 ### Remove a tag
 
-```
+```sh
 $ git issue tag -r e6a9 urgent
 Removed tag urgent
 ```
 
 ### Assign issue
 
-```
+```sh
 $ git issue assign e6a9 joe@example.com
 Assigned to joe@example.com
 ```
 
 ### Add issue watcher
 
-```
+```sh
 $ git issue watcher e6a9 jane@example.com
 Added watcher jane@example.com
 ```
 
 ### List issues tagged as gui
 
-```
+```sh
 $ git issue list gui
 e6a95c9 New issue entered from the command line
 ```
 
 ### Push issues repository to a server
 
-```
+```sh
 $ git issue git remote add origin git@github.com:dspinellis/gi-example.git
 $ git issue git push -u origin master
 Counting objects: 60, done.
@@ -349,7 +350,7 @@ Branch master set up to track remote branch master from origin.
 
 ### Clone issues repository from server
 
-```
+```sh
 $ git issue clone git@github.com:dspinellis/gi-example.git my-issues
 Cloning into '.issues'...
 remote: Counting objects: 60, done.
@@ -361,9 +362,9 @@ Checking connectivity... done.
 Cloned git@github.com:dspinellis/gi-example.git into my-issues
 ```
 
-### List open issues
+#### List open issues
 
-```
+```sh
 $ git issue list
 7dfa5b7 An issue entered from the editor
 e6a95c9 New issue entered from the command line
@@ -371,14 +372,14 @@ e6a95c9 New issue entered from the command line
 
 ### Create new issue
 
-```
+```sh
 $ git issue new -s 'Issue added on another host'
 Added issue abc9adc
 ```
 
 ### Push changes to server
 
-```
+```sh
 $ git issue push
 Counting objects: 7, done.
 Compressing objects: 100% (6/6), done.
@@ -390,7 +391,7 @@ To git@github.com:dspinellis/gi-example.git
 
 ### Show issue added on the other host
 
-```
+```sh
 $ git issue show 7dfa5b7
 issue 7dfa5b7f4591ecaa8323716f229b84ad40f5275b
 Author: Diomidis Spinellis <dds@aueb.gr>
@@ -404,7 +405,7 @@ Tags:   open
 
 ### Show issue and comments
 
-```
+```sh
 $ git issue show -c e6a95c9
 issue e6a95c91b31ded8fc229a41cc4bd7d281ce6e0f1
 Author: Diomidis Spinellis <dds@aueb.gr>
@@ -424,7 +425,7 @@ Date:   Fri, 29 Jan 2016 01:03:57 +0200
 
 ### Pull in remote changes (on the original host)
 
-```
+```sh
 $ git issue pull
 remote: Counting objects: 7, done.
 remote: Compressing objects: 100% (6/6), done.
@@ -441,9 +442,9 @@ Fast-forward
  create mode 100644 issues/ab/c9adc61025a3cb73b0c67470b65cefc133a8d0/tags
 ```
 
-### List open issues
+#### List open issues
 
-```
+```sh
 $ git issue list
 7dfa5b7 An issue entered from the editor
 abc9adc Issue added on another host
@@ -452,7 +453,7 @@ e6a95c9 New issue entered from the command line
 
 ### Import issues from GitHub
 
-```
+```sh
 $ git issue import github dspinellis git-issue-test-issues # Import GitHub issues
 Imported/updated issue #3 as 0a27c66
 Imported/updated issue #2 as feb2a2c
@@ -488,7 +489,7 @@ Edit History:
 
 ### Export all issues to GitHub
 
-```
+```sh
 $ git issue exportall github dspinellis git-issue-test-issues
 Creating issue 9179d38...
 Couldn't add assignee dspinellis. Skipping...
@@ -503,7 +504,7 @@ Creating comment aea83723c0414ff135afcfb5165d64f8a7ad687c...
 
 ### Make changes
 
-```
+```sh
 $ git issue edit 9179d38
 Opening editor...
 Edited issue 9179d38
@@ -514,7 +515,7 @@ Edited comment d72c68d
 
 ### Export modified issues back to GitHub
 
-```
+```sh
 $ git issue export github dspinellis git-issue-test-issues # Needs a token with the relevant permissions
 Issue b83d92872dc16440402516a5f4ce1b8cc6436344 not modified, skipping...
 Comment a93764f32179e93493ceb0a7060efce1e980aff1 not modified, skipping...
@@ -528,7 +529,7 @@ Comment aea83723c0414ff135afcfb5165d64f8a7ad687c not modified, skipping...
 
 ### Sub-command auto-completion
 
-```
+```sh
 $ git issue [Tab]
 assign   clone    comment  git      init     log      pull     show     watcher
 attach   close    edit     help     list     new      push     tag
@@ -536,7 +537,7 @@ attach   close    edit     help     list     new      push     tag
 
 ### Issue SHA auto-completion
 
-```
+```sh
 $ git issue show [Tab]
 7dfa5b7 - An issue entered from the editor
 e6a95c9 - New issue entered from the command line
