@@ -16,7 +16,7 @@ USAGE_import_EOF
 usage_export()
 {
   cat <<\USAGE_export_EOF
-gi export usage: git issue export provider user repo
+gi export usage: git issue export [remote | provider user repo]
 -e        Expand escape attribute sequences before exporting (see gi list -l)
 
 Example: git issue export github torvalds linux
@@ -812,11 +812,14 @@ export_issues()
   done
   shift $((OPTIND - 1));
 
-  test -n "$2" -a -n "$3" || usage_export
-  test "$1" = github -o "$1" = gitlab || usage_export
-  provider=$1
-  user="$(convert_to_lower_case "$2")"
-  repo="$(convert_to_lower_case "$3")"
+  test "$1" = github -o "$1" = gitlab -a -n "$2" -a -n "$3" ||
+    url=$(get_url "$1"); if [ "${url}" = "fatal: No such remote '${1}'" ]; then printf "%s\n\n" "${url}"; usage_export; fi; provider=$(get_provider "${url}"); user=$(get_user "${url}"); repo=$(get_repo "${url}")
+  if ! test -n "${provider}" && ! test -n "${user}" && ! test -n "${repo}"
+  then
+    provider=$1
+    user="$(convert_to_lower_case "$2")"
+    repo="$(convert_to_lower_case "$3")"
+  fi
 
   cdissues
   test -d "imports/$provider/$user/$repo" || error "No local issues found for this repository."
@@ -975,7 +978,7 @@ sub_import()
 usage_exportall()
 {
   cat <<\USAGE_exportall_EOF
-gi new usage: git issue exportall [-a] provider user repo
+gi new usage: git issue exportall [-a] [remote | provider user repo]
 USAGE_exportall_EOF
   exit 2
 }
@@ -983,7 +986,7 @@ USAGE_exportall_EOF
 # Export all not already present issues to GitHub/GitLab repo
 sub_exportall()
 {
-  local all provider user repo flag OPTIND shas num path i
+  local all provider user repo flag OPTIND shas num path i url
   while getopts a flag ; do
     case "$flag" in
     a)
@@ -996,11 +999,15 @@ sub_exportall()
   done
   shift $((OPTIND - 1));
 
-  test "$1" = github -o "$1" = gitlab || usage_exportall
-  test -n "$2" -a -n "$3" || usage_exportall
-  provider="$1"
-  user="$(convert_to_lower_case "$2")"
-  repo="$(convert_to_lower_case "$3")"
+  test "$1" = github -o "$1" = gitlab -a -n "$2" -a -n "$3" ||
+    url=$(get_url "$1"); if [ "${url}" = "fatal: No such remote '${1}'" ]; then printf "%s\n\n" "${url}"; usage_exportall; fi; provider=$(get_provider "${url}"); user=$(get_user "${url}"); repo=$(get_repo "${url}")
+
+  if ! test -n "${provider}" && ! test -n "${user}" && ! test -n "${repo}"
+  then
+    provider="$1"
+    user="$(convert_to_lower_case "$2")"
+    repo="$(convert_to_lower_case "$3")"
+  fi
 
   # Create list of relevant shas sorted by date
   shas=$(sub_list -l %i -o %c "$all"| sed '/^$/d' | tr '\n' ' ')
